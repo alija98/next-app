@@ -2,8 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
 import { RegexHelper } from '../../utils';
 
-const MONGO_API =
-  'mongodb+srv://alija:alija123@atlascluster.of5ulpc.mongodb.net/nextjsProducts?retryWrites=true&w=majority';
+
 
 async function login(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
