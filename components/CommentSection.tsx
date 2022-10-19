@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Comment } from '../types';
 import { useAppSelector } from '../store/hooks';
@@ -9,6 +9,9 @@ interface CommentSectionProps {
 
 const CommentSection = ({ comments }: CommentSectionProps) => {
   const userID = useAppSelector((state) => state.rootReducer.user._id);
+
+  const [commentInput, setCommentInput] = useState('');
+  const [isEditActive, setIsEditActive] = useState(false);
 
   return (
     <div style={{ padding: '5%' }}>
@@ -30,6 +33,8 @@ const CommentSection = ({ comments }: CommentSectionProps) => {
           }}
           placeholder="Insert your comment"
           type={'text'}
+          value={commentInput}
+          onChange={(e) => setCommentInput(e.target.value)}
         ></input>
         <button
           style={{
@@ -53,7 +58,9 @@ const CommentSection = ({ comments }: CommentSectionProps) => {
             return (
               <div
                 style={{
-                  border: '1px solid black',
+                  border: '1px solid ',
+                  borderColor: isEditActive ? 'blue' : 'black',
+                  borderWidth: isEditActive ? '2px' : '1px',
                   padding: '5px',
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -61,7 +68,10 @@ const CommentSection = ({ comments }: CommentSectionProps) => {
                 }}
                 key={comment._id}
               >
-                <div>{comment.content}</div>
+                <div>
+                  {comment.commentCreator && <h4>{comment.commentCreator}</h4>}
+                  {comment.content}
+                </div>
                 {userID === comment.userID && (
                   <div style={{ display: 'flex' }}>
                     <button
@@ -69,8 +79,14 @@ const CommentSection = ({ comments }: CommentSectionProps) => {
                         padding: '10px',
                         margin: '5px',
                       }}
+                      onClick={() => {
+                        isEditActive
+                          ? setCommentInput('')
+                          : setCommentInput(comment.content);
+                        setIsEditActive((prev) => !prev);
+                      }}
                     >
-                      Edit
+                      {isEditActive ? 'Cancel' : 'Edit'}
                     </button>
                     <button
                       style={{

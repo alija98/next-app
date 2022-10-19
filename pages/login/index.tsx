@@ -45,7 +45,8 @@ const Login: NextPage = () => {
           })
         );
         setLoading(false);
-        router.replace('/products');
+
+        type === 'login' ? router.back() : router.replace('/products');
       })
       .catch((error) => {
         console.log(error);

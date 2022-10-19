@@ -106,6 +106,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   };
   const data = await getProduct();
+  console.log(data.comments);
 
   return {
     props: {

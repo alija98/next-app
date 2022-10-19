@@ -1,8 +1,6 @@
 import { MongoClient, ObjectId } from 'mongodb';
 import { User } from '../types';
 
-// const MONGO_API =
-//   'mongodb+srv://alija:alija123@atlascluster.of5ulpc.mongodb.net/nextjsProducts?retryWrites=true&w=majority';
 const MONGO_API: string = process.env.MONGODB as string;
 
 export class RegexHelper {
@@ -26,9 +24,6 @@ export const findUserById = async (client: MongoClient, userID: string) => {
     _id: new ObjectId(userID),
   });
 };
-/*
-{"_id":{"$oid":"634e877fb5d99229599ac7da"},"email":"alija@gmail.com","password":"test123"}
-*/
 
 export const insertUser = async (client: MongoClient, user: User) => {
   const database = client.db();
@@ -56,5 +51,42 @@ export const getItemComments = async (client: MongoClient, id: number) => {
     .collection('comments')
     .find({ productId: id.toString() })
     .toArray();
-  return comments;
+
+  let editedComments: any = [];
+  for (const comment of comments) {
+    const tempUser = await database.collection('users').findOne({
+      _id: new ObjectId(comment.userID),
+    });
+    editedComments = [
+      ...editedComments,
+      {
+        ...comment,
+        commentCreator: tempUser?.email,
+      },
+    ];
+    console.log('user', tempUser);
+  }
+
+  return editedComments;
+};
+
+export const updateComment = async (
+  client: MongoClient,
+  id: string,
+  content: string
+) => {
+  const database = client.db();
+  return await database.collection('comments').findOneAndUpdate(
+    {
+      _id: new ObjectId(id),
+    },
+    {
+      $set: {
+        content: content,
+      },
+    },
+    {
+      upsert: false,
+    }
+  );
 };

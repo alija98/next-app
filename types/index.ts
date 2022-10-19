@@ -21,4 +21,5 @@ export interface Comment {
   _id: string;
   userID: string;
   content: string;
+  commentCreator?: string;
 }

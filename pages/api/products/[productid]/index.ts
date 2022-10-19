@@ -3,9 +3,7 @@ import {
   connectToDatabase,
   getSingleProduct,
   getItemComments,
-  findUserById,
 } from '../../../../utils';
-import { Comment } from '../../../../types';
 import { MongoClient } from 'mongodb';
 
 async function products(req: NextApiRequest, res: NextApiResponse) {
@@ -18,8 +16,7 @@ async function products(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
     let client: MongoClient,
       product,
-      comments: any[] = [],
-      parsedComments;
+      comments: any[] = [];
     try {
       client = await connectToDatabase();
     } catch (error) {
@@ -38,27 +35,6 @@ async function products(req: NextApiRequest, res: NextApiResponse) {
     } catch (error) {
       res.status(500).json({ message: 'Database problem' });
     }
-
-    // try {
-    //   const test = await findUserById(client, comments[0].userID);
-    //   console.log('USER BY ID je', test);
-    // } catch (error) {
-    //   res.status(500).json({ message: 'Database problem' });
-    // }
-
-    /*
-
-  for (const comment of comments) {
-    console.log('COMM JE', comment);
-
-    const tempUser = await database.collection('users').findOne({
-      // _id: `ObjectId('${comment.userID}')`,
-      _id: "ObjectId('634e877fb5d99229599ac7da')",
-    });
-    console.log('user', tempUser);
-  }
-
-    */
 
     res.status(200).json({
       message: 'Product details',
