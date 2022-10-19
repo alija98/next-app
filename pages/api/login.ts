@@ -1,9 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { MongoClient } from 'mongodb';
-import { RegexHelper } from '../../utils';
-
-const MONGO_API =
-  'mongodb+srv://alija:alija123@atlascluster.of5ulpc.mongodb.net/nextjsProducts?retryWrites=true&w=majority';
+import { connectToDatabase, RegexHelper, findUser } from '../../utils';
 
 async function login(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
@@ -14,18 +10,25 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
       return;
     }
 
-    const client = await MongoClient.connect(MONGO_API);
-    const database = client.db();
-    const user = await database.collection('users').findOne({
-      email: email,
-    });
-
+    let client, user;
+    try {
+      client = await connectToDatabase();
+    } catch (error) {
+      res.status(500).json({ message: 'Connecting to database failed' });
+      return;
+    }
+    try {
+      user = await findUser(client, email);
+    } catch (error) {
+      res.status(500).json({ message: 'Database problem' });
+      return;
+    }
     client.close();
 
     if (user?.password === password) {
       res.status(200).json({
         message: 'Successfully logged in ',
-        user: { email },
+        user: user,
       });
     } else {
       res.status(403).json({ message: 'Incorrect email or password!' });

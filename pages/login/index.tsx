@@ -41,6 +41,7 @@ const Login: NextPage = () => {
           setUser({
             isLogged: true,
             name: data.user.email,
+            _id: data.user._id,
           })
         );
         setLoading(false);

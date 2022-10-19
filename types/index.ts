@@ -10,4 +10,15 @@ export interface ProductType {
   category: string;
   thumbnail: string;
   images: string[];
+  comments: string[];
+}
+export interface User {
+  email: string;
+  password: string;
+}
+
+export interface Comment {
+  _id: string;
+  userID: string;
+  content: string;
 }

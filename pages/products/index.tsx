@@ -5,8 +5,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { ProductType } from '../../types';
 
-const API = 'https://dummyjson.com/';
-
 interface ProductPropsType {
   products: ProductType[];
 }
@@ -62,6 +60,7 @@ const Products: NextPage<ProductPropsType> = ({ products }) => {
                     width={150}
                     alt="avatar"
                     src={product.images[0]}
+                    objectFit="contain"
                   />
                 </div>
               </button>
@@ -73,18 +72,19 @@ const Products: NextPage<ProductPropsType> = ({ products }) => {
 };
 
 export async function getStaticProps() {
-  let parsedProducts = [];
-  try {
-    const {
-      data: { products },
-    } = await axios.get(API + 'products');
-    parsedProducts = products;
-  } catch (error) {
-    console.log(error);
-  }
+  const getProducts = async () => {
+    try {
+      const { data } = await axios.get('http://localhost:3000/api/products');
+      return data.products;
+    } catch (error) {
+      console.log('error');
+      return [];
+    }
+  };
+
   return {
     props: {
-      products: parsedProducts,
+      products: await getProducts(),
     },
   };
 }
