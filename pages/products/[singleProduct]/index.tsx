@@ -79,7 +79,11 @@ const SingleProduct: NextPage<SingleProductProps> = ({ product, comments }) => {
           </Link>
         </div>
       </div>
-      <CommentSection comments={comments} />
+      <CommentSection
+        comments={comments}
+        productMongoID={product?._id}
+        productCustomID={product?.id}
+      />
     </>
   );
 };
@@ -106,7 +110,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   };
   const data = await getProduct();
-  console.log(data.comments);
 
   return {
     props: {

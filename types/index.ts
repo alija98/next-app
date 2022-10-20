@@ -11,6 +11,7 @@ export interface ProductType {
   thumbnail: string;
   images: string[];
   comments: string[];
+  _id: string | undefined;
 }
 export interface User {
   email: string;
@@ -22,4 +23,5 @@ export interface Comment {
   userID: string;
   content: string;
   commentCreator?: string;
+  date: Date;
 }

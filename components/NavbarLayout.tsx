@@ -4,11 +4,11 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setUser } from '../store/userSlice';
 import router from 'next/router';
 
-interface NavbarLayout {
-  children: JSX.Element;
+interface NavbarLayoutProps {
+  children: React.ReactNode;
 }
 
-const NavbarLayout = ({ children }: NavbarLayout) => {
+const NavbarLayout = ({ children }: NavbarLayoutProps) => {
   const { isLogged } = useAppSelector((state) => state.rootReducer.user);
 
   const dispatch = useAppDispatch();
@@ -19,6 +19,7 @@ const NavbarLayout = ({ children }: NavbarLayout) => {
       setUser({
         isLogged: false,
         name: '',
+        _id: '',
       })
     );
     router.replace('/');

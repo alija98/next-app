@@ -50,6 +50,7 @@ export const getItemComments = async (client: MongoClient, id: number) => {
   const comments = await database
     .collection('comments')
     .find({ productId: id.toString() })
+    .sort({ _id: -1 })
     .toArray();
 
   let editedComments: any = [];
@@ -64,7 +65,6 @@ export const getItemComments = async (client: MongoClient, id: number) => {
         commentCreator: tempUser?.email,
       },
     ];
-    console.log('user', tempUser);
   }
 
   return editedComments;
@@ -72,21 +72,45 @@ export const getItemComments = async (client: MongoClient, id: number) => {
 
 export const updateComment = async (
   client: MongoClient,
-  id: string,
+  commentID: string,
   content: string
 ) => {
   const database = client.db();
+
   return await database.collection('comments').findOneAndUpdate(
     {
-      _id: new ObjectId(id),
+      _id: new ObjectId(commentID),
     },
     {
       $set: {
         content: content,
+        date: new Date(),
       },
     },
     {
       upsert: false,
     }
   );
+};
+
+export const addComment = async (
+  client: MongoClient,
+  userID: string,
+  productID: string,
+  content: string
+) => {
+  const database = client.db();
+  return await database.collection('comments').insertOne({
+    userID: userID,
+    productId: productID.toString(),
+    content: content,
+    date: new Date(),
+  });
+};
+
+export const deleteComment = async (client: MongoClient, commentID: string) => {
+  const database = client.db();
+  return await database.collection('comments').deleteOne({
+    _id: new ObjectId(commentID),
+  });
 };
