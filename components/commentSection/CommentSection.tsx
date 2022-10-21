@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import dayjs from 'dayjs';
 
-import { Comment } from '../types';
-import { useAppSelector } from '../store/hooks';
+import { Comment } from '../../types';
+import { useAppSelector } from '../../store/hooks';
 import axios from 'axios';
+import styles from './CommentSection.module.css';
 
 interface CommentSectionProps {
   comments: Comment[];
@@ -21,7 +23,6 @@ const CommentSection = ({
   const [error, setError] = useState('');
 
   const userID = useAppSelector((state) => state.rootReducer.user._id);
-  console.log(comments);
 
   const handleComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,6 +86,23 @@ const CommentSection = ({
     }
   }, [error]);
 
+  const getCommentTimeDiff = (commentDate: Date) => {
+    const daysDiff = dayjs().diff(commentDate, 'd');
+    const hoursDiff = dayjs().diff(commentDate, 'h');
+    const minutesDiff = dayjs().diff(commentDate, 'm');
+
+    if (daysDiff > 0) {
+      <p className={styles.time}>{daysDiff}day</p>;
+    }
+    if (hoursDiff > 0) {
+      <p className={styles.time}>{hoursDiff} hour</p>;
+    }
+    if (minutesDiff > 0) {
+      return <p className={styles.time}>{minutesDiff} minute</p>;
+    }
+    return <p className={styles.time}>{'less than minute'}</p>;
+  };
+
   return (
     <div style={{ padding: '5%' }}>
       <h2 style={{ padding: '10px' }}>Comments</h2>
@@ -143,17 +161,7 @@ const CommentSection = ({
                     paddingLeft: '7px',
                     marginTop: '15px',
                   }}
-                >
-                  <p style={{ fontSize: '14px', paddingRight: '5px' }}>
-                    {new Date(comment.date).toLocaleDateString('eu')}
-                  </p>
-                  <p style={{ fontSize: '14px' }}>
-                    {new Date(comment.date).toLocaleTimeString('eu', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                </div>
+                ></div>
                 <div
                   style={{
                     border: '1px solid ',
@@ -180,14 +188,15 @@ const CommentSection = ({
                         width: '100%',
                       }}
                     >
-                      <div>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
                         {comment.commentCreator && (
                           <h4>{comment.commentCreator}</h4>
                         )}
+                        {getCommentTimeDiff(comment?.date)}
                       </div>
                     </div>
 
-                    {comment.content}
+                    <p style={{ paddingTop: '8px' }}>{comment.content}</p>
                   </div>
                   {userID === comment.userID && (
                     <div style={{ display: 'flex' }}>

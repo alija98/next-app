@@ -1,4 +1,6 @@
 import { MongoClient, ObjectId } from 'mongodb';
+import { hash, compare } from 'bcryptjs';
+
 import { User } from '../types';
 
 const MONGO_API: string = process.env.MONGODB as string;
@@ -7,6 +9,19 @@ export class RegexHelper {
   static email =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 }
+
+export const hashPassword = async (password: string) => {
+  const hashedPassword = await hash(password, 12);
+  return hashedPassword;
+};
+
+export const verifyPassword = async (
+  password: string,
+  hashedPassword: string
+) => {
+  const isValid = compare(password, hashedPassword);
+  return isValid;
+};
 
 export const connectToDatabase = async () =>
   await MongoClient.connect(MONGO_API);
@@ -27,7 +42,7 @@ export const findUserById = async (client: MongoClient, userID: string) => {
 
 export const insertUser = async (client: MongoClient, user: User) => {
   const database = client.db();
-  await database.collection('users').insertOne({
+  return await database.collection('users').insertOne({
     email: user.email,
     password: user.password,
   });
@@ -35,7 +50,12 @@ export const insertUser = async (client: MongoClient, user: User) => {
 
 export const getAllProducts = async (client: MongoClient) => {
   const database = client.db();
-  return await database.collection('products').find().toArray();
+  return await database
+    .collection('products')
+    .find()
+    .sort({ id: 1 })
+
+    .toArray();
 };
 
 export const getSingleProduct = async (client: MongoClient, id: number) => {

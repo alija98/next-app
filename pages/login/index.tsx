@@ -1,11 +1,14 @@
 import React, { useRef, useState, useEffect, CSSProperties } from 'react';
-import styles from './Login.module.css';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { setUser } from '../../store/userSlice';
-import { useAppDispatch } from '../../store/hooks';
 import axios from 'axios';
 import FadeLoader from 'react-spinners/FadeLoader';
+
+import { signIn } from 'next-auth/react';
+
+import { useAppDispatch } from '../../store/hooks';
+import { setUser } from '../../store/userSlice';
+import styles from './Login.module.css';
 
 const override: CSSProperties = {
   display: 'block',
@@ -34,29 +37,53 @@ const Login: NextPage = () => {
       email: email || '',
       password: password || '',
     };
-    axios
-      .post(`api/${type}`, reqBody)
-      .then(({ data }) => {
-        dispatch(
-          setUser({
-            isLogged: true,
-            name: data.user.email,
-            _id: data.user._id,
-          })
-        );
-        setLoading(false);
 
-        type === 'login' ? router.back() : router.replace('/products');
-      })
-      .catch((error) => {
-        console.log(error);
-        setError(error.response.data.message);
-        setLoading(false);
+    if (type === 'login') {
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: email,
+        password: password,
       });
+      // dispatch(
+      //   setUser({
+      //     isLogged: true,
+      //     name: data.user.email,
+      //     _id: data.user._id,
+      //     token: 'fakeToken',
+      //   })
+      // );
+      setLoading(false);
+      router.back();
+      if (result?.error) {
+        setError('Your email or password are not valid');
+        return;
+      }
+      console.log(result);
+    } else {
+      axios
+        .post('api/auth/register', reqBody)
+        .then(({ data }) => {
+          dispatch(
+            setUser({
+              isLogged: true,
+              name: data.user.email,
+              _id: data.user._id,
+              token: 'fakeToken',
+            })
+          );
+          setLoading(false);
+          router.replace('/products');
+        })
+        .catch((error) => {
+          console.log(error);
+          setError(error.response.data.message);
+          setLoading(false);
+        });
+    }
   };
 
   useEffect(() => {
-    if (error.length > 0) {
+    if (error?.length > 0) {
       let timer = setTimeout(() => setError(''), 2000);
       return () => {
         clearTimeout(timer);

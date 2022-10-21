@@ -12,7 +12,6 @@ async function comments(req: NextApiRequest, res: NextApiResponse) {
   let client: MongoClient,
     comments: any[] = [];
   const { comment, productCustomID, userID, commentID } = req.body;
-  console.log(req.body);
   if (!userID || userID.length === 0) {
     res
       .status(401)
@@ -41,7 +40,7 @@ async function comments(req: NextApiRequest, res: NextApiResponse) {
     }
 
     res.status(200).json({
-      message: 'Successfully edited comment ',
+      message: 'Successfully edited comment',
       comments: comments,
     });
     client.close();
@@ -57,8 +56,6 @@ async function comments(req: NextApiRequest, res: NextApiResponse) {
       res.status(500).json({ message: 'Database problem' });
     }
   } else if (req.method === 'DELETE') {
-    console.log('ev gaa');
-
     try {
       await deleteComment(client, commentID);
       res.status(200).json({

@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { ProductType } from '../../../types';
 import Link from 'next/link';
 import { Comment } from '../../../types/index';
-import CommentSection from '../../../components/CommentSection';
+import CommentSection from '../../../components/commentSection/CommentSection';
 
 interface SingleProductProps {
   product: ProductType | null;
@@ -21,36 +21,44 @@ const SingleProduct: NextPage<SingleProductProps> = ({ product, comments }) => {
           display: 'flex',
           alignItems: 'center',
           margin: '40px',
+          flexDirection: 'column',
         }}
       >
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            flexDirection: 'column',
-            flex: 3,
+            flex: 1,
           }}
         >
-          <div style={{ height: '250', width: '250' }}>
+          <div style={{ height: '300', width: '300' }}>
             <Image
-              height={250}
-              width={250}
+              height={400}
+              width={400}
               alt="avatar"
               src={product?.images[0] || ''}
               objectFit={'contain'}
             />
           </div>
-          <h2 style={{ paddingTop: '15px' }}>{product?.title}</h2>
-          <h3 style={{ paddingTop: '15px' }}>Price: ${product?.price}</h3>
-          <h3 style={{ paddingTop: '15px' }}>
-            Category:{' '}
-            <span style={{ textTransform: 'capitalize' }}>
-              {product?.category}
-            </span>
-          </h3>
-          <p style={{ paddingTop: '15px' }}>{product?.description}</p>
+          <div
+            style={{
+              flex: 1,
+              marginLeft: '20px',
+            }}
+          >
+            <h2 style={{ paddingTop: '15px' }}>{product?.title}</h2>
+            <h3 style={{ paddingTop: '15px' }}>Price: ${product?.price}</h3>
+            <h3 style={{ paddingTop: '15px' }}>
+              Category:{' '}
+              <span style={{ textTransform: 'capitalize' }}>
+                {product?.category}
+              </span>
+            </h3>
+            <p style={{ paddingTop: '15px' }}>{product?.description}</p>
+          </div>
         </div>
-        <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
+
+        <div style={{ display: 'flex', marginTop: '30px' }}>
           <Link href={`/products/${product?.id}/black`} passHref>
             <div
               style={{
@@ -59,6 +67,10 @@ const SingleProduct: NextPage<SingleProductProps> = ({ product, comments }) => {
                 backgroundColor: 'gray',
                 cursor: 'pointer',
                 width: '60%',
+                marginRight: '10px',
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
               }}
             >
               <p style={{ color: '#fff' }}>Select Black Variant</p>
@@ -72,6 +84,10 @@ const SingleProduct: NextPage<SingleProductProps> = ({ product, comments }) => {
                 backgroundColor: 'gray',
                 cursor: 'pointer',
                 width: '60%',
+                marginLeft: '10px',
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
               }}
             >
               <p style={{ color: '#fff' }}>Select White Variant</p>

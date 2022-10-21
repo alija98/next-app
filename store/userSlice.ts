@@ -4,12 +4,14 @@ export interface UserState {
   isLogged: boolean;
   name: string;
   _id: string;
+  token: string | null;
 }
 
 const userInitialState: UserState = {
   isLogged: false,
   name: '',
   _id: '',
+  token: null,
 };
 
 export const userSlice = createSlice({

@@ -2,7 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setUser } from '../store/userSlice';
-import router from 'next/router';
+import { useRouter } from 'next/router';
+import { useSession, signOut } from 'next-auth/react';
 
 interface NavbarLayoutProps {
   children: React.ReactNode;
@@ -10,16 +11,21 @@ interface NavbarLayoutProps {
 
 const NavbarLayout = ({ children }: NavbarLayoutProps) => {
   const { isLogged } = useAppSelector((state) => state.rootReducer.user);
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  console.log(session, status);
 
   const dispatch = useAppDispatch();
 
   const signOutHandler = (e: React.FormEvent) => {
     e.preventDefault();
+    signOut();
     dispatch(
       setUser({
         isLogged: false,
         name: '',
         _id: '',
+        token: null,
       })
     );
     router.replace('/');
@@ -65,7 +71,7 @@ const NavbarLayout = ({ children }: NavbarLayoutProps) => {
                     paddingLeft: '25px',
                   }}
                 >
-                  App Name
+                  Web Shop
                 </h1>
               </a>
             </Link>
@@ -88,7 +94,7 @@ const NavbarLayout = ({ children }: NavbarLayoutProps) => {
                     style={{
                       color: '#fff',
                       paddingRight: '50px',
-                      fontSize: 22,
+                      fontSize: 20,
                     }}
                   >
                     Log Out
@@ -96,13 +102,29 @@ const NavbarLayout = ({ children }: NavbarLayoutProps) => {
                 </a>
               </button>
             ) : (
-              <Link href={'/login'}>
+              <button
+                style={{
+                  border: 'none',
+                  backgroundColor: '#000',
+                }}
+                onClick={() =>
+                  router.pathname === '/login'
+                    ? router.push('/')
+                    : router.push('/login')
+                }
+              >
                 <a>
-                  <h3 style={{ color: '#fff', paddingRight: '50px' }}>
-                    Log In
+                  <h3
+                    style={{
+                      color: '#fff',
+                      paddingRight: '50px',
+                      fontSize: '22px',
+                    }}
+                  >
+                    {router.pathname === '/login' ? 'Home' : ' Login'}
                   </h3>
                 </a>
-              </Link>
+              </button>
             )}
           </div>
         </div>
