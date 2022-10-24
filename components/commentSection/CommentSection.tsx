@@ -77,6 +77,23 @@ const CommentSection = ({
     }
   };
 
+  const getCommentTimeDiff = (commentDate: Date) => {
+    const daysDiff = dayjs().diff(commentDate, 'd');
+    const hoursDiff = dayjs().diff(commentDate, 'h');
+    const minutesDiff = dayjs().diff(commentDate, 'm');
+
+    if (daysDiff > 0) {
+      return <p className={styles.time}>{daysDiff} day</p>;
+    }
+    if (hoursDiff > 0) {
+      return <p className={styles.time}>{hoursDiff} hour</p>;
+    }
+    if (minutesDiff > 0) {
+      return <p className={styles.time}>{minutesDiff} minute</p>;
+    }
+    return <p className={styles.time}>{'less than minute'}</p>;
+  };
+
   useEffect(() => {
     if (error.length > 0) {
       let timer = setTimeout(() => setError(''), 2000);
@@ -85,23 +102,6 @@ const CommentSection = ({
       };
     }
   }, [error]);
-
-  const getCommentTimeDiff = (commentDate: Date) => {
-    const daysDiff = dayjs().diff(commentDate, 'd');
-    const hoursDiff = dayjs().diff(commentDate, 'h');
-    const minutesDiff = dayjs().diff(commentDate, 'm');
-
-    if (daysDiff > 0) {
-      <p className={styles.time}>{daysDiff}day</p>;
-    }
-    if (hoursDiff > 0) {
-      <p className={styles.time}>{hoursDiff} hour</p>;
-    }
-    if (minutesDiff > 0) {
-      return <p className={styles.time}>{minutesDiff} minute</p>;
-    }
-    return <p className={styles.time}>{'less than minute'}</p>;
-  };
 
   return (
     <div style={{ padding: '5%' }}>
@@ -205,6 +205,8 @@ const CommentSection = ({
                           padding: '10px',
                           margin: '5px',
                           borderRadius: '5px',
+                          border: 'none',
+                          width: '80px',
                         }}
                         onClick={() => {
                           selectedComment
@@ -224,6 +226,7 @@ const CommentSection = ({
                           backgroundColor: 'rgb(219, 20, 83)',
                           border: 'none',
                           borderRadius: '5px',
+                          width: '80px',
                         }}
                         onClick={(e) => deleteComment(e, comment._id)}
                       >

@@ -7,12 +7,17 @@ import {
   deleteComment,
 } from '../../../utils';
 import { MongoClient } from 'mongodb';
+import { unstable_getServerSession } from 'next-auth/next';
+import { authOptions } from '../../api/auth/[...nextauth]';
 
 async function comments(req: NextApiRequest, res: NextApiResponse) {
   let client: MongoClient,
     comments: any[] = [];
   const { comment, productCustomID, userID, commentID } = req.body;
-  if (!userID || userID.length === 0) {
+
+  const session = await unstable_getServerSession(req, res, authOptions);
+
+  if (!session) {
     res
       .status(401)
       .json({ type: 'NOT_LOGGED', message: 'User is not logged in!' });

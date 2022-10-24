@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { useAppDispatch } from '../store/hooks';
 import { setUser } from '../store/userSlice';
 import { useRouter } from 'next/router';
 import { useSession, signOut } from 'next-auth/react';
@@ -10,10 +10,9 @@ interface NavbarLayoutProps {
 }
 
 const NavbarLayout = ({ children }: NavbarLayoutProps) => {
-  const { isLogged } = useAppSelector((state) => state.rootReducer.user);
   const router = useRouter();
-  const { data: session, status } = useSession();
-  console.log(session, status);
+  const { status } = useSession();
+  const isLogged = status === 'authenticated';
 
   const dispatch = useAppDispatch();
 
@@ -22,10 +21,8 @@ const NavbarLayout = ({ children }: NavbarLayoutProps) => {
     signOut();
     dispatch(
       setUser({
-        isLogged: false,
         name: '',
         _id: '',
-        token: null,
       })
     );
     router.replace('/');
@@ -52,7 +49,11 @@ const NavbarLayout = ({ children }: NavbarLayoutProps) => {
               flex: 1,
               justifyContent: 'center',
             }}
-          ></div>
+          >
+            <Link href={'/profile'}>
+              <a>{isLogged && <h2 style={{ color: '#fff' }}>Profile</h2>}</a>
+            </Link>
+          </div>
           <div
             style={{
               display: 'flex',

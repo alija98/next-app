@@ -1,8 +1,10 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import type { NextAuthOptions } from 'next-auth';
+
 import { connectToDatabase, verifyPassword } from '../../../utils';
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
   },
@@ -32,8 +34,11 @@ export default NextAuth({
         client.close();
         return {
           email: user.email,
+          _id: user._id,
         };
       },
     }),
   ],
-});
+};
+
+export default NextAuth(authOptions);

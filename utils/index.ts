@@ -113,6 +113,26 @@ export const updateComment = async (
   );
 };
 
+export const changePassword = async (
+  client: MongoClient,
+  email: string,
+  newPassword: string
+) => {
+  const database = client.db();
+  console.log('email je', email, 'hashed je', newPassword);
+
+  return await database.collection('users').findOneAndUpdate(
+    {
+      email: email,
+    },
+    {
+      $set: {
+        password: newPassword,
+      },
+    }
+  );
+};
+
 export const addComment = async (
   client: MongoClient,
   userID: string,

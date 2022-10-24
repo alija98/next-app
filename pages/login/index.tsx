@@ -39,36 +39,42 @@ const Login: NextPage = () => {
     };
 
     if (type === 'login') {
-      const result = await signIn('credentials', {
+      await signIn('credentials', {
         redirect: false,
         email: email,
         password: password,
+      }).then((data) => {
+        setLoading(false);
+        if (data?.error) {
+          setError('Your email or password are not valid');
+          return;
+        }
+        axios
+          .post('api/auth/login', reqBody)
+          .then(({ data }) => {
+            console.log('data je', data);
+            dispatch(
+              setUser({
+                name: data.user.email,
+                _id: data.user._id,
+              })
+            );
+          })
+          .catch((error) => {
+            console.log(error);
+            setError(error.response.data.message);
+          });
+        setLoading(false);
+        router.back();
       });
-      // dispatch(
-      //   setUser({
-      //     isLogged: true,
-      //     name: data.user.email,
-      //     _id: data.user._id,
-      //     token: 'fakeToken',
-      //   })
-      // );
-      setLoading(false);
-      router.back();
-      if (result?.error) {
-        setError('Your email or password are not valid');
-        return;
-      }
-      console.log(result);
     } else {
       axios
         .post('api/auth/register', reqBody)
         .then(({ data }) => {
           dispatch(
             setUser({
-              isLogged: true,
               name: data.user.email,
               _id: data.user._id,
-              token: 'fakeToken',
             })
           );
           setLoading(false);
