@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { connectToDatabase, findUser } from '../../../utils';
+import { connectToDatabase, findUser } from '@/utils/index';
 
 async function login(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {

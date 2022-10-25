@@ -3,7 +3,7 @@ import {
   connectToDatabase,
   getSingleProduct,
   getItemComments,
-} from '../../../../utils';
+} from '@/utils/index';
 import { MongoClient } from 'mongodb';
 
 async function products(req: NextApiRequest, res: NextApiResponse) {

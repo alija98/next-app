@@ -50,12 +50,7 @@ export const insertUser = async (client: MongoClient, user: User) => {
 
 export const getAllProducts = async (client: MongoClient) => {
   const database = client.db();
-  return await database
-    .collection('products')
-    .find()
-    .sort({ id: 1 })
-
-    .toArray();
+  return await database.collection('products').find().sort({ id: 1 }).toArray();
 };
 
 export const getSingleProduct = async (client: MongoClient, id: number) => {
@@ -74,17 +69,28 @@ export const getItemComments = async (client: MongoClient, id: number) => {
     .toArray();
 
   let editedComments: any = [];
+
   for (const comment of comments) {
-    const tempUser = await database.collection('users').findOne({
-      _id: new ObjectId(comment.userID),
-    });
-    editedComments = [
-      ...editedComments,
-      {
-        ...comment,
-        commentCreator: tempUser?.email,
-      },
-    ];
+    try {
+      const tempUser = await database.collection('users').findOne({
+        _id: new ObjectId(comment.userID),
+      });
+      editedComments = [
+        ...editedComments,
+        {
+          ...comment,
+          commentCreator: tempUser?.email,
+        },
+      ];
+    } catch (error) {
+      editedComments = [
+        ...editedComments,
+        {
+          ...comment,
+          commentCreator: comment.userID,
+        },
+      ];
+    }
   }
 
   return editedComments;
@@ -119,7 +125,6 @@ export const changePassword = async (
   newPassword: string
 ) => {
   const database = client.db();
-  console.log('email je', email, 'hashed je', newPassword);
 
   return await database.collection('users').findOneAndUpdate(
     {

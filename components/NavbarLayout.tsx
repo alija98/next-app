@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAppDispatch } from '../store/hooks';
 import { setUser } from '../store/userSlice';
 import { useRouter } from 'next/router';
-import { useSession, signOut } from 'next-auth/react';
+import { signOut, getSession } from 'next-auth/react';
 
 interface NavbarLayoutProps {
   children: React.ReactNode;
@@ -11,8 +11,7 @@ interface NavbarLayoutProps {
 
 const NavbarLayout = ({ children }: NavbarLayoutProps) => {
   const router = useRouter();
-  const { status } = useSession();
-  const isLogged = status === 'authenticated';
+  const [isLogged, setIsLogged] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -28,30 +27,45 @@ const NavbarLayout = ({ children }: NavbarLayoutProps) => {
     router.replace('/');
   };
 
+  useEffect(() => {
+    getSession().then((session) => {
+      if (session) {
+        setIsLogged(true);
+      }
+    });
+  }, [router]);
+
   return (
     <>
       <nav>
         <div
           style={{
+            position: 'fixed',
             width: '100%',
             left: 0,
             top: 0,
             backgroundColor: '#000',
-            padding: '20px',
+            padding: '25px',
+            paddingRight: '35px',
+            paddingLeft: '35px',
             display: 'flex',
             justifyContent: 'space-evenly',
-            margin: 0,
+            zIndex: 1000,
           }}
         >
           <div
             style={{
               display: 'flex',
               flex: 1,
-              justifyContent: 'center',
+              justifyContent: 'flex-start',
             }}
           >
             <Link href={'/profile'}>
-              <a>{isLogged && <h2 style={{ color: '#fff' }}>Profile</h2>}</a>
+              <a>
+                {isLogged && (
+                  <h3 style={{ color: '#fff', fontSize: '22px' }}>Profile</h3>
+                )}
+              </a>
             </Link>
           </div>
           <div
@@ -64,16 +78,15 @@ const NavbarLayout = ({ children }: NavbarLayoutProps) => {
           >
             <Link href={'/'}>
               <a>
-                <h1
+                <h3
                   style={{
                     color: '#fff',
-                    paddingRight: '50px',
                     textAlign: 'center',
-                    paddingLeft: '25px',
+                    fontSize: '22px',
                   }}
                 >
                   Web Shop
-                </h1>
+                </h3>
               </a>
             </Link>
           </div>
@@ -94,8 +107,7 @@ const NavbarLayout = ({ children }: NavbarLayoutProps) => {
                   <h3
                     style={{
                       color: '#fff',
-                      paddingRight: '50px',
-                      fontSize: 20,
+                      fontSize: 22,
                     }}
                   >
                     Log Out
@@ -118,7 +130,6 @@ const NavbarLayout = ({ children }: NavbarLayoutProps) => {
                   <h3
                     style={{
                       color: '#fff',
-                      paddingRight: '50px',
                       fontSize: '22px',
                     }}
                   >

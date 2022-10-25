@@ -3,7 +3,8 @@ import type { NextPage } from 'next';
 import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { ProductType } from '../../types';
+
+import { ProductType } from '@/types/index';
 
 interface ProductPropsType {
   products: ProductType[];
@@ -17,13 +18,22 @@ const Products: NextPage<ProductPropsType> = ({ products }) => {
   };
 
   return (
-    <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
+    <div
+      style={{
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'center',
+        marginTop: '100px',
+      }}
+    >
       <div
         style={{
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'space-between',
           width: '80%',
+          gap: '30px',
+          marginBottom: '20px',
         }}
       >
         {products?.length > 0 &&
@@ -33,16 +43,15 @@ const Products: NextPage<ProductPropsType> = ({ products }) => {
                 key={index}
                 style={{
                   padding: '40px',
-                  margin: '10px',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  boxShadow: '4px 4px 4px 0px rgba(0,0,0,0.5)',
-                  borderRadius: '5%',
+                  boxShadow: '5px 5px 5px 1px rgba(0,0,0,0.4)',
                   cursor: 'pointer',
                   backgroundColor: '#fff',
                   width: '300px',
-                  border: '2px solid black',
+                  borderTopRightRadius: '1rem',
+                  borderBottomLeftRadius: '1rem',
                 }}
                 onClick={() => openProduct(product.id)}
               >

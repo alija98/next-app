@@ -5,7 +5,7 @@ import {
   getItemComments,
   addComment,
   deleteComment,
-} from '../../../utils';
+} from '@/utils/index';
 import { MongoClient } from 'mongodb';
 import { unstable_getServerSession } from 'next-auth/next';
 import { authOptions } from '../../api/auth/[...nextauth]';
@@ -33,6 +33,8 @@ async function comments(req: NextApiRequest, res: NextApiResponse) {
 
   if (req.method === 'PUT') {
     try {
+      console.log(session?.user?.email);
+
       await updateComment(client, commentID, comment);
     } catch (error) {
       res.status(500).json({ message: 'Database problem' });
@@ -50,11 +52,13 @@ async function comments(req: NextApiRequest, res: NextApiResponse) {
     });
     client.close();
   } else if (req.method === 'POST') {
+    const userEmail = session.user?.email as string;
     try {
-      await addComment(client, userID, productCustomID, comment);
+      await addComment(client, userID || userEmail, productCustomID, comment);
       comments = await getItemComments(client, productCustomID);
+
       res.status(200).json({
-        message: 'Successfully edited comment ',
+        message: 'Successfully added comment ',
         comments: comments,
       });
     } catch (error) {

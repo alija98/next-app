@@ -3,11 +3,10 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import FadeLoader from 'react-spinners/FadeLoader';
+import { getSession, signIn } from 'next-auth/react';
 
-import { signIn } from 'next-auth/react';
-
-import { useAppDispatch } from '../../store/hooks';
-import { setUser } from '../../store/userSlice';
+import { useAppDispatch } from '@/store/hooks';
+import { setUser } from '@/store/userSlice';
 import styles from './Login.module.css';
 
 const override: CSSProperties = {
@@ -40,7 +39,6 @@ const Login: NextPage = () => {
 
     if (type === 'login') {
       await signIn('credentials', {
-        redirect: false,
         email: email,
         password: password,
       }).then((data) => {
@@ -52,7 +50,6 @@ const Login: NextPage = () => {
         axios
           .post('api/auth/login', reqBody)
           .then(({ data }) => {
-            console.log('data je', data);
             dispatch(
               setUser({
                 name: data.user.email,
@@ -77,8 +74,12 @@ const Login: NextPage = () => {
               _id: data.user._id,
             })
           );
-          setLoading(false);
-          router.replace('/products');
+          signIn('credentials', {
+            email: email,
+            password: password,
+          }).then(() => {
+            setLoading(false);
+          });
         })
         .catch((error) => {
           console.log(error);
@@ -86,6 +87,11 @@ const Login: NextPage = () => {
           setLoading(false);
         });
     }
+  };
+
+  const signInWithGoogle = async (e: React.FormEvent) => {
+    e.preventDefault();
+    signIn('google', {});
   };
 
   useEffect(() => {
@@ -97,58 +103,86 @@ const Login: NextPage = () => {
     }
   }, [error]);
 
+  useEffect(() => {
+    getSession().then((session) => {
+      if (session) {
+        router.replace('/');
+      }
+    });
+  }, [router]);
+
   return (
     <div className={styles.container}>
-      <form style={{ display: 'flex', flexDirection: 'column' }}>
-        <label style={{ paddingBottom: '5px' }}>Email</label>
-        <input
-          style={{ padding: '5px', width: '200px' }}
-          type={'text'}
-          ref={emailRef}
-        ></input>
-        <label style={{ paddingBottom: '5px' }}>Password</label>
-        <input
-          style={{ padding: '5px', width: '200px' }}
-          type={'text'}
-          ref={passwordRef}
-        ></input>
-        {error?.length > 0 && (
-          <label style={{ color: 'red', fontSize: 12 }}>{error}</label>
-        )}
-        <button
-          style={{
-            marginTop: '30px',
-            width: '70%',
-            alignSelf: 'center',
-            backgroundColor: '#000',
-            border: 'none',
-            padding: 8,
-          }}
-          onClick={(e) => registerOrSignIn('login', e)}
-        >
-          <h3 style={{ color: '#fff' }}>Login</h3>
-        </button>
-        <button
-          style={{
-            marginTop: '15px',
-            width: '70%',
-            alignSelf: 'center',
-            backgroundColor: '#000',
-            border: 'none',
-            padding: 8,
-          }}
-          onClick={(e) => registerOrSignIn('register', e)}
-        >
-          <h3 style={{ color: '#fff' }}>Register</h3>
-        </button>
-        <FadeLoader
-          color={'green'}
-          loading={loading}
-          cssOverride={override}
-          aria-label="Loading Spinner"
-          data-testid="loader"
-        />
-      </form>
+      <div className={styles.formContainer}>
+        <form style={{ display: 'flex', flexDirection: 'column' }}>
+          <label style={{ paddingBottom: '1px', paddingLeft: '3px' }}>
+            Email
+          </label>
+          <input
+            style={{ padding: '5px', marginBottom: '10px', width: '300px' }}
+            type={'text'}
+            ref={emailRef}
+          ></input>
+          <label style={{ paddingBottom: '1px', paddingLeft: '3px' }}>
+            Password
+          </label>
+          <input
+            style={{ padding: '5px', width: '300px' }}
+            type={'text'}
+            ref={passwordRef}
+          ></input>
+          {error?.length > 0 && (
+            <label style={{ color: 'red', fontSize: 12 }}>{error}</label>
+          )}
+          <button
+            style={{
+              marginTop: '30px',
+              width: '70%',
+              alignSelf: 'center',
+              backgroundColor: '#000',
+              border: 'none',
+              padding: 8,
+            }}
+            onClick={(e) => registerOrSignIn('login', e)}
+          >
+            <h3 style={{ color: '#fff' }}>Login</h3>
+          </button>
+          <button
+            style={{
+              marginTop: '15px',
+              width: '70%',
+              alignSelf: 'center',
+              backgroundColor: '#000',
+              border: 'none',
+              padding: 8,
+            }}
+            onClick={(e) => registerOrSignIn('register', e)}
+          >
+            <h3 style={{ color: '#fff' }}>Register</h3>
+          </button>
+          <FadeLoader
+            color={'green'}
+            loading={loading}
+            cssOverride={override}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          />
+        </form>
+      </div>
+      <p>or</p>
+      <div onClick={(e) => signInWithGoogle(e)} className={styles.google_btn}>
+        <div className={styles.google_icon_wrapper}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            alt="google"
+            className={styles.google_icon}
+            src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+          />
+        </div>
+        <p className={styles.btn_text}>
+          <b>Sign in with Google</b>
+        </p>
+      </div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { connectToDatabase, getAllProducts } from '../../../utils';
+import { connectToDatabase, getAllProducts } from '@/utils/index';
 
 async function products(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
@@ -16,6 +16,7 @@ async function products(req: NextApiRequest, res: NextApiResponse) {
     } catch (error) {
       res.status(500).json({ message: 'Database problem' });
     }
+
     res.status(200).json({
       message: 'List of products',
       products: products,

@@ -16,40 +16,19 @@ interface Session {
     name: string;
   };
 }
+interface ProfileProps {
+  session: Session;
+}
 
-const Profile = (session: Session) => {
-  //   const [loading, setLoading] = useState(true);
-  //   useEffect(() => {
-  //     getSession().then((session) => {
-  //       if (!session) {
-  //         window.location.href = '/login';
-  //       } else {
-  //         setLoading(false);
-  //       }
-  //     });
-  //   }, []);
-
-  //   if (loading) {
-  //     return (
-  //       <h2
-  //         style={{
-  //           paddingTop: '40px',
-  //         }}
-  //       >
-  //         Loading...
-  //       </h2>
-  //     );
-  //   }
-
+const Profile = ({ session }: ProfileProps) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const oldPasswordRef = useRef<HTMLInputElement | null>(null);
   const newPasswordRef = useRef<HTMLInputElement | null>(null);
-  const user = session?.user?.email;
-
-  console.log(session);
+  const user = session?.user?.name;
+  const mail = session?.user?.email;
 
   const changePasswordHandler = (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,6 +77,7 @@ const Profile = (session: Session) => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        marginTop: '80px',
       }}
     >
       <div
@@ -109,54 +89,66 @@ const Profile = (session: Session) => {
         }}
       >
         <h3>Welcome back {user}</h3>
-        <p style={{ paddingTop: '8px' }}>Change your password</p>
-      </div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          paddingTop: '2rem',
-        }}
-      >
-        <form style={{ display: 'flex', flexDirection: 'column' }}>
-          <label style={{ paddingBottom: '5px' }}>Old Password</label>
-          <input
-            style={{ padding: '5px', width: '200px' }}
-            type={'text'}
-            ref={oldPasswordRef}
-          ></input>
-          <label style={{ paddingBottom: '5px' }}>New Password</label>
-          <input
-            style={{ padding: '5px', width: '200px' }}
-            type={'text'}
-            ref={newPasswordRef}
-          ></input>
-          {error?.length > 0 && (
-            <label style={{ color: 'red', fontSize: 12 }}>{error}</label>
-          )}
-          <button
-            style={{
-              marginTop: '30px',
-              width: '70%',
-              alignSelf: 'center',
-              backgroundColor: '#000',
-              border: 'none',
-              padding: 8,
-            }}
-            onClick={(e) => changePasswordHandler(e)}
-          >
-            <h3 style={{ color: '#fff' }}>Change Password</h3>
-          </button>
 
-          <FadeLoader
-            color={'green'}
-            loading={loading}
-            cssOverride={override}
-            aria-label="Loading Spinner"
-            data-testid="loader"
-          />
-        </form>
+        {user === mail ? (
+          <>
+            <p style={{ paddingTop: '8px' }}>Change your password</p>
+          </>
+        ) : null}
       </div>
+      {user === mail ? (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            paddingTop: '2rem',
+          }}
+        >
+          <form style={{ display: 'flex', flexDirection: 'column' }}>
+            <label style={{ paddingBottom: '5px' }}>Old Password</label>
+            <input
+              style={{ padding: '5px', width: '200px' }}
+              type={'text'}
+              ref={oldPasswordRef}
+            ></input>
+            <label style={{ paddingBottom: '5px' }}>New Password</label>
+            <input
+              style={{ padding: '5px', width: '200px' }}
+              type={'text'}
+              ref={newPasswordRef}
+            ></input>
+            {error?.length > 0 && (
+              <label style={{ color: 'red', fontSize: 12 }}>{error}</label>
+            )}
+            <button
+              style={{
+                marginTop: '30px',
+                width: '70%',
+                alignSelf: 'center',
+                backgroundColor: '#000',
+                border: 'none',
+                padding: 8,
+              }}
+              onClick={(e) => changePasswordHandler(e)}
+            >
+              <h3 style={{ color: '#fff' }}>Change Password</h3>
+            </button>
+
+            <FadeLoader
+              color={'green'}
+              loading={loading}
+              cssOverride={override}
+              aria-label="Loading Spinner"
+              data-testid="loader"
+            />
+          </form>
+        </div>
+      ) : (
+        <h4 style={{ paddingTop: '30px' }}>
+          You are logged with your google account
+        </h4>
+      )}
+
       {success && (
         <h4
           style={{

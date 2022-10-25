@@ -4,10 +4,10 @@ import axios from 'axios';
 import { GetServerSideProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 import Image from 'next/image';
-import { ProductType } from '../../../types';
 import Link from 'next/link';
-import { Comment } from '../../../types/index';
-import CommentSection from '../../../components/commentSection/CommentSection';
+
+import { Comment, ProductType } from '@/types/index';
+import CommentSection from '@/components/commentSection/CommentSection';
 
 interface SingleProductProps {
   product: ProductType | null;
@@ -20,8 +20,9 @@ const SingleProduct: NextPage<SingleProductProps> = ({ product, comments }) => {
         style={{
           display: 'flex',
           alignItems: 'center',
-          margin: '40px',
+          margin: '20px',
           flexDirection: 'column',
+          marginTop: '80px',
         }}
       >
         <div
@@ -31,14 +32,23 @@ const SingleProduct: NextPage<SingleProductProps> = ({ product, comments }) => {
             flex: 1,
           }}
         >
-          <div style={{ height: '300', width: '300' }}>
-            <Image
-              height={400}
-              width={400}
-              alt="avatar"
-              src={product?.images[0] || ''}
-              objectFit={'contain'}
-            />
+          <div
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+            }}
+          >
+            <div style={{ height: '300', width: '300' }}>
+              <Image
+                height={400}
+                width={400}
+                alt="avatar"
+                src={product?.images[0] || ''}
+                objectFit={'contain'}
+              />
+            </div>
           </div>
           <div
             style={{

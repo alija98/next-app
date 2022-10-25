@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 import type { NextAuthOptions } from 'next-auth';
 
 import { connectToDatabase, verifyPassword } from '../../../utils';
@@ -34,11 +35,16 @@ export const authOptions: NextAuthOptions = {
         client.close();
         return {
           email: user.email,
-          _id: user._id,
+          name: user.email,
         };
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    }),
   ],
+  secret: process.env.JWT_SECRET,
 };
 
 export default NextAuth(authOptions);

@@ -6,7 +6,7 @@ import {
   verifyPassword,
   hashPassword,
   changePassword,
-} from '../../../utils';
+} from '@/utils/index';
 import { authOptions } from './[...nextauth]';
 
 async function login(req: NextApiRequest, res: NextApiResponse) {
@@ -14,7 +14,6 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
     const { oldPassword, newPassword } = req.body.body;
 
     const session = await unstable_getServerSession(req, res, authOptions);
-    console.log(session);
 
     if (!session) {
       res
@@ -41,8 +40,7 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
       return;
     }
     try {
-      user = await findUser(client, session.user?.email || '');
-      console.log('USER JE', user);
+      user = await findUser(client, session.user?.email as string);
 
       const isValid = await verifyPassword(oldPassword, user?.password);
       if (!isValid) {

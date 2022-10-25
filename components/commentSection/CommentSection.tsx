@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
+import { getSession } from 'next-auth/react';
 
 import { Comment } from '../../types';
 import { useAppSelector } from '../../store/hooks';
@@ -21,6 +22,7 @@ const CommentSection = ({
   const [commentInput, setCommentInput] = useState('');
   const [selectedComment, setSelectedComment] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const [userMail, setUserMail] = useState('');
 
   const userID = useAppSelector((state) => state.rootReducer.user._id);
 
@@ -103,8 +105,16 @@ const CommentSection = ({
     }
   }, [error]);
 
+  useEffect(() => {
+    getSession().then((session) => {
+      if (session) {
+        setUserMail(session?.user?.email as string);
+      }
+    });
+  }, []);
+
   return (
-    <div style={{ padding: '5%' }}>
+    <div style={{ padding: '4rem' }}>
       <h2 style={{ padding: '10px' }}>Comments</h2>
       <form
         style={{
@@ -198,7 +208,7 @@ const CommentSection = ({
 
                     <p style={{ paddingTop: '8px' }}>{comment.content}</p>
                   </div>
-                  {userID === comment.userID && (
+                  {comment.commentCreator === userMail && (
                     <div style={{ display: 'flex' }}>
                       <button
                         style={{

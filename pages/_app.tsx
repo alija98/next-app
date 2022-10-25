@@ -1,6 +1,6 @@
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
-import NavbarLayout from '../components/NavbarLayout';
+import NavbarLayout from '@/components/NavbarLayout';
 import { Provider } from 'react-redux';
 import { store } from '../store/store';
 import { SessionProvider } from 'next-auth/react';

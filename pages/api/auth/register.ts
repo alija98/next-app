@@ -5,7 +5,7 @@ import {
   findUser,
   insertUser,
   hashPassword,
-} from '../../../utils';
+} from '@/utils/index';
 
 async function register(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
@@ -15,8 +15,8 @@ async function register(req: NextApiRequest, res: NextApiResponse) {
       res.status(422).json({ message: 'Please input a valid email!' });
       return;
     }
-    if (!password || password.length < 5) {
-      res.status(422).json({ message: 'Password must have 5 characters!' });
+    if (!password || password.length < 6) {
+      res.status(422).json({ message: 'Password must have 6 characters!' });
     }
     let client, user;
     try {
